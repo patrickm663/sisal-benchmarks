@@ -1,0 +1,29 @@
+define Main 
+
+type RealVector = array [double_real];
+type RealMatrix = array [RealVector];
+
+% Dot product
+function dot_product(v1, v2: RealVector; N: integer returns double_real)
+   for i in 1, N
+      p := v1[i] * v2[i]
+   returns value of sum p
+   end for
+end function
+
+function Main(num_policies: integer; num_months: integer returns RealVector)
+   let
+      df_vector := for i in 1, num_months 
+                   returns array of double_real(i) * 0.005d0 
+                   end for;
+      results := 
+         for r in 1, num_policies
+            cf_row := for c in 1, num_months 
+                      returns array of (double_real(r)) + (double_real(c)) 
+                      end for;
+         returns array of dot_product(cf_row, df_vector, num_months)
+         end for;
+   in
+      results
+   end let
+end function
