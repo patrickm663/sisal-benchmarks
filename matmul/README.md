@@ -7,16 +7,15 @@ This benchmark uses loops, comparing a naive implementations (`matmul.sis`) to a
 ### Performance Benchmarks (`N=1000`)
 
 *Benchmarked on 12 threads (`-w12`). Note: Benchmarking varies depending on the run.*
+*SISAL benchmarking uses ` hyperfine --warmup 20 --runs 100 'echo "1000" | ./matmul_tr -w$(nproc) -gss -z'`; Julia uses `@benchmark main_benchmark_X(1000) samples=100 evals=1 setup=(GC.gc()` to remove the impact of the garbage collector*
 
-| Implementation | Environment / Backend | Execution Time | Notes |
+| Implementation | Environment / Backend | Mean Execution Time | Notes |
 | :--- | :--- | :--- | :--- |
-| `matmul.sis` | SISAL | **~245ms** | Naive implementation. |
-| `matmul_tr.sis` | SISAL | **~35ms** | Transposed matrix implementation. |
-| `matmul_tr.jl` (`@threads`) | Julia (Native) | **~130ms** | Matches the multi-threading behavior of calling SISAL. |
-| `LoopVectorization.jl` (`@tturbo`) | Julia (Native LLVM) | **~35ms** | Performance is similar to SISAL. |
-| `LoopVectorization.jl` (`@tturbo`) | Julia (`MKL.jl`) | **7ms** | Intel Math Kernel Library optimisation. |
-| Built-in Matrix Multiplication | Julia (OpenBLAS) | **8ms** | Default BLAS. Includes matrix initialisation time. |
-| Built-in Matrix Multiplication | Julia (`MKL.jl`) | **7ms** | Intel Math Kernel Library optimisation. |`
+| `matmul.sis` | SISAL | **274.5ms** | Naive implementation. |
+| `matmul_tr.sis` | SISAL | **43.2ms** | Transposed matrix implementation. |
+| `matmul_tr.jl` (`@threads`) | Julia (Native) | **172.1ms** | Matches the multi-threading behavior of calling SISAL. |
+| `LoopVectorization.jl` (`@tturbo`) | Julia (Native LLVM) | **13.1ms** | Performance is similar to BLAS. |
+| Built-in Matrix Multiplication | Julia (OpenBLAS) | **12.8ms** | Default BLAS. Includes matrix initialisation time. |
 
 ## How to Run
 First, compile the programme (either `matmul.sis` or `matmul_tr.sis`):
