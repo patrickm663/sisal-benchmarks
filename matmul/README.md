@@ -14,7 +14,7 @@ This benchmark uses loops, comparing a naive implementations (`matmul.sis`) to a
 | :--- | :--- | :--- | :--- |
 | `matmul.sis` | SISAL | **274.5ms** | Naive implementation. |
 | `matmul_tr.sis` | SISAL | **43.2ms** | Transposed matrix implementation. |
-| `matmul_tr.jl` (`@threads`) | Julia (Native) | **172.1ms** | Matches the multi-threading behavior of calling SISAL. |
+| `matmul_tr.jl` (`@threads`) | Julia (Native) | **172.1ms** | Transposed implementation and matches the multi-threading behavior of calling SISAL. |
 | `LoopVectorization.jl` (`@tturbo`) | Julia (Native LLVM) | **13.1ms** | Performance is similar to BLAS. |
 | Built-in Matrix Multiplication | Julia (OpenBLAS) | **12.8ms** | Default BLAS. Includes matrix initialisation time. |
 
