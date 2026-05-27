@@ -1,7 +1,22 @@
 # Square Matrix Multiplication
 This benchmark uses loops, comparing a naive implementations (`matmul.sis`) to a transposed variation (`matmul_tr.sis`) with better loop ordering. `matmul_tr.sh` is the preferred approach.
 
-**Note:** This benchmark also times matrix generation and transposing (in the case of `matmul_tr.sis`).
+**Note:** All benchmarks time matrix generation and transposing (in the case of `matmul_tr.sis`).
+
+## TLDR
+### Performance Benchmarks (`N=1000`)
+
+*Benchmarked on 12 threads (`-w12`). Note: Benchmarking varies depending on the run.*
+
+| Implementation | Environment / Backend | Execution Time | Notes |
+| :--- | :--- | :--- | :--- |
+| `matmul.sis` | SISAL | **~245ms** | Naive implementation. |
+| `matmul_tr.sis` | SISAL | **~35ms** | Transposed matrix implementation. |
+| `matmul_tr.jl` (`@threads`) | Julia (Native) | **~130ms** | Matches the multi-threading behavior of calling SISAL. |
+| `LoopVectorization.jl` (`@tturbo`) | Julia (Native LLVM) | **~35ms** | Performance is similar to SISAL. |
+| `LoopVectorization.jl` (`@tturbo`) | Julia (`MKL.jl`) | **7ms** | Intel Math Kernel Library optimisation. |
+| Built-in Matrix Multiplication | Julia (OpenBLAS) | **8ms** | Default BLAS. Includes matrix initialisation time. |
+| Built-in Matrix Multiplication | Julia (`MKL.jl`) | **7ms** | Intel Math Kernel Library optimisation. |`
 
 ## How to Run
 First, compile the programme (either `matmul.sis` or `matmul_tr.sis`):
@@ -12,15 +27,6 @@ Then, run it by passing the matrix dimensions using `echo` (`-w$(nproc)` sets th
 ```sh
 echo "1000" | time ./matmul_tr -w$(npoc) -gss -z
 ```
-
-## Performance
-Using `N=1000` on 12 threads (`-w12`), `matmul` achieves about **240-250ms** whereas `matmul_tr` achieves around **30-40ms**. Benchmarking varies depending on run.
-
-A Julia implementation is provided in `matmul_tr.jl`. Using `@threads` to match the multi-threading behaviour when calling SISAL, it benchmarks in at around **130ms**.
-
-Using Julia's built-in matrix multiplication (calling BLAS), it benchmarks at **8ms** (including matrix initialisation).
-
-Switching to `LoopVectorization.jl` and calling `@tturbo` is similar to SISAL in the region of **35ms**. A strictly no-allocation version isn't tested, but will likely improve the runtime.
 
 ## Specs
 **CPU:** 11th Gen Intel(R) Core(TM) i5-11400H (12) @ 4.50 GHz
