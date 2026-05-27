@@ -1,0 +1,47 @@
+define Main
+
+type RealVector = array [double_real];
+type RealMatrix = array [RealVector];
+
+% Populates an NxN matrix with index-dependent values to defeat constant folding
+function generate_matrix(N: integer; is_B: boolean returns RealMatrix)
+   for i in 1, N
+   returns array of
+      for j in 1, N
+      returns array of
+         let 
+            % Asymmetric generation so A and B are not identical
+            val := if is_B then 
+                      double_real(i) - double_real(j) + 0.5d0
+                   else 
+                      double_real(i) + double_real(j) * 0.1d0
+                   end if
+         in 
+            val
+         end let
+      end for
+   end for
+end function
+
+% Main benchmark execution
+function Main(N: integer returns double_real)
+   let
+      % 1. Allocate and populate the matrices
+      A := generate_matrix(N, false);
+      B := generate_matrix(N, true);
+      
+      % 2. Perform naive Matrix Multiplication
+      C := for i in 1, N
+           returns array of
+              for j in 1, N 
+              returns array of
+                 for k in 1, N
+                    p := A[i][k] * B[k][j]
+                 returns value of sum p
+                 end for
+              end for
+           end for;
+   in
+      C[N][N] % Checksum is last value of the matrix
+   end let
+end function

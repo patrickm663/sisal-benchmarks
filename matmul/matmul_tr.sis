@@ -1,0 +1,58 @@
+define Main
+
+type RealVector = array [double_real];
+type RealMatrix = array [RealVector];
+
+% Populates an NxN matrix with index-dependent values
+function generate_matrix(N: integer; is_B: boolean returns RealMatrix)
+   for i in 1, N
+   returns array of
+      for j in 1, N
+         val := if is_B then 
+                   double_real(i) - double_real(j) + 0.5d0
+                else 
+                   double_real(i) + double_real(j) * 0.1d0
+                end if;
+      returns array of val
+      end for
+   end for
+end function
+
+% Transposes a 2D matrix
+function transpose( M : RealMatrix; N : integer returns RealMatrix )
+   for j in 1, N
+   returns array of
+      for i in 1, N
+         row := M[i];
+      returns array of row[j]
+      end for
+   end for
+end function
+
+% Main benchmark execution
+function Main(N: integer returns double_real)
+   let
+      % 1. Allocate and populate the matrices
+      A := generate_matrix(N, false);
+      B := generate_matrix(N, true);
+      
+      % 2. Transpose B 
+      B_T := transpose(B, N);
+      
+      % 3. Perform Matrix Multiplication
+      C := for i in 1, N
+           rowA := A[i];
+           returns array of
+              for j in 1, N
+              rowB_T := B_T[j];
+              returns array of
+                 for k in 1, N
+                    p := rowA[k] * rowB_T[k];
+                 returns value of sum p
+                 end for
+              end for
+           end for;
+   in
+     C[N][N] % Last value is checksum
+   end let
+end function
