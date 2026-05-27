@@ -30,3 +30,13 @@ sisalc -o foo foo.sis
 ```
 sisalc <CLang-flags> -o foo foo.sis
 ```
+
+## Container
+To run this build in a container rather, a `Containerfile` is provided. Once built, the compiler can be called using:
+```sh
+<docker/nerdctl/podman...> run --rm -v "$(pwd):/work" -w /work <name> sisalc -o foo foo.sis
+```
+It can also be aliased if need be to e.g.
+```sh
+alias sisalc='<docker etc.> run --rm -v "$(pwd):/work" -w /work <name> sisalc'
+```
