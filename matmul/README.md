@@ -29,8 +29,8 @@ echo "1000" | time ./matmul_tr -w$(npoc) -gss -z
 ```
 
 ## Specs
-**CPU:** 11th Gen Intel(R) Core(TM) i5-11400H (12) @ 4.50 GHz
-**RAM:** 16GB
-**Kernel:** Linux 7.0.10-arch1-1
-**Julia:** 1.12.6
-**Zig:** 0.17.0 
+- **CPU:** 11th Gen Intel(R) Core(TM) i5-11400H (12) @ 4.50 GHz
+- **RAM:** 16GB
+- **Kernel:** Linux 7.0.10-arch1-1
+- **Julia:** 1.12.6
+- **Zig:** 0.17.0 
