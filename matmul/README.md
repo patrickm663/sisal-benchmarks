@@ -1,5 +1,5 @@
-# Square Matrix Multiplication
-This benchmark uses loops, comparing a naive implementations (`matmul.sis`) to a transposed variation (`matmul_tr.sis`) with better loop ordering. `matmul_tr.sh` is the preferred approach.
+# Square Matrix Multiplication (GEMM)
+This benchmark uses loops, comparing a naive implementations (`matmul.sis`) to a transposed variation (`matmul_tr.sis`) with better loop ordering. `matmul_tr.sh` is the preferred approach. Julia is included for reference.
 
 **Note:** All benchmarks time matrix generation and transposing (in the case of `matmul_tr.sis`).
 
