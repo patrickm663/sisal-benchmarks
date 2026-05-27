@@ -7,6 +7,7 @@ This benchmark uses loops, comparing a naive implementations (`matmul.sis`) to a
 ### Performance Benchmarks (`N=1000`)
 
 *Benchmarked on 12 threads (`-w12`). Note: Benchmarking varies depending on the run.*
+
 *SISAL benchmarking uses ` hyperfine --warmup 20 --runs 100 'echo "1000" | ./matmul_tr -w$(nproc) -gss -z'`; Julia uses `@benchmark main_benchmark_X(1000) samples=100 evals=1 setup=(GC.gc()` to remove the impact of the garbage collector*
 
 | Implementation | Environment / Backend | Mean Execution Time | Notes |
