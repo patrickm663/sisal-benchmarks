@@ -1,0 +1,242 @@
+define Main
+
+type RealVector = array[double_real];
+global sqrt ( x: double_real returns double_real )
+
+% Initialize the CLBG benchmark planetary bodies
+function init_bodies( returns RealVector, RealVector, RealVector,
+                               RealVector, RealVector, RealVector,
+                               RealVector )
+   let
+      % Sun
+      sx  := 0.0d0;
+      sy  := 0.0d0;
+      sz  := 0.0d0;
+      svx := 0.0d0;
+      svy := 0.0d0;
+      svz := 0.0d0;
+      sm  := 39.478417604357434d0;
+
+      % Jupiter
+      jx  :=  4.84143144246472090d0;
+      jy  := -1.16032004402742839d0;
+      jz  := -1.03622044471123109d-1;
+      jvx :=  1.66007664274403694d-3 * 365.24d0;
+      jvy :=  7.69901118419740425d-3 * 365.24d0;
+      jvz := -6.90460016972063023d-5 * 365.24d0;
+      jm  :=  9.54791938424326609d-4 * 39.478417604357434d0;
+
+      % Saturn
+      satx  :=  8.34336671824457987d0;
+      saty  :=  4.12479856412430479d0;
+      satz  := -4.03523417114321381d-1;
+      satvx := -2.76742510726862411d-3 * 365.24d0;
+      satvy :=  4.99852801234917238d-3 * 365.24d0;
+      satvz :=  2.30417297573763929d-5 * 365.24d0;
+      satm  :=  2.85885980666130812d-4 * 39.478417604357434d0;
+
+      % Uranus
+      ux  :=  1.28943695621391310d1;
+      uy  := -1.51111514016986312d1;
+      uz  := -2.23307578892655734d-1;
+      uvx :=  2.96460137564761618d-3 * 365.24d0;
+      uvy :=  2.37847173959480950d-3 * 365.24d0;
+      uvz := -2.96589568540237556d-5 * 365.24d0;
+      um  :=  4.36624404335156298d-5 * 39.478417604357434d0;
+
+      % Neptune
+      nx  :=  1.53796971148509165d1;
+      ny  := -2.59193146099879641d1;
+      nz  :=  1.79258772950371181d-1;
+      nvx :=  2.68067772490389322d-3 * 365.24d0;
+      nvy :=  1.62824170038242295d-3 * 365.24d0;
+      nvz := -9.51592254519715870d-5 * 365.24d0;
+      nm  :=  5.15138902046611451d-5 * 39.478417604357434d0;
+
+      % Offset sun momentum
+      px := jvx*jm + satvx*satm + uvx*um + nvx*nm;
+      py := jvy*jm + satvy*satm + uvy*um + nvy*nm;
+      pz := jvz*jm + satvz*satm + uvz*um + nvz*nm;
+
+      x := for i in 1, 5
+             v := if i = 1 then sx
+                  elseif i = 2 then jx
+                  elseif i = 3 then satx
+                  elseif i = 4 then ux
+                  else nx
+                  end if;
+           returns array of v
+           end for;
+
+      y := for i in 1, 5
+             v := if i = 1 then sy
+                  elseif i = 2 then jy
+                  elseif i = 3 then saty
+                  elseif i = 4 then uy
+                  else ny
+                  end if;
+           returns array of v
+           end for;
+
+      z := for i in 1, 5
+             v := if i = 1 then sz
+                  elseif i = 2 then jz
+                  elseif i = 3 then satz
+                  elseif i = 4 then uz
+                  else nz
+                  end if;
+           returns array of v
+           end for;
+
+      vx := for i in 1, 5
+             v := if i = 1 then 0.0d0 - (px / sm)
+                  elseif i = 2 then jvx
+                  elseif i = 3 then satvx
+                  elseif i = 4 then uvx
+                  else nvx
+                  end if;
+           returns array of v
+           end for;
+
+      vy := for i in 1, 5
+             v := if i = 1 then 0.0d0 - (py / sm)
+                  elseif i = 2 then jvy
+                  elseif i = 3 then satvy
+                  elseif i = 4 then uvy
+                  else nvy
+                  end if;
+           returns array of v
+           end for;
+
+      vz := for i in 1, 5
+             v := if i = 1 then 0.0d0 - (pz / sm)
+                  elseif i = 2 then jvz
+                  elseif i = 3 then satvz
+                  elseif i = 4 then uvz
+                  else nvz
+                  end if;
+           returns array of v
+           end for;
+
+      mass := for i in 1, 5
+                v := if i = 1 then sm
+                     elseif i = 2 then jm
+                     elseif i = 3 then satm
+                     elseif i = 4 then um
+                     else nm
+                     end if;
+             returns array of v
+             end for;
+   in 
+      x, y, z, vx, vy, vz, mass
+   end let
+end function
+
+% Calculates the physical energy of the N-body system
+function energy( N : integer;
+                 x, y, z, vx, vy, vz, mass : RealVector
+                 returns double_real )
+   let
+      % Kinetic energy
+      ke := for i in 1, N
+               m   := mass[i];
+               vxi := vx[i];
+               vyi := vy[i];
+               vzi := vz[i];
+            returns value of sum
+               0.5d0 * m * (vxi*vxi + vyi*vyi + vzi*vzi)
+            end for;
+
+      % Potential energy
+      pe := for i in 1, N - 1
+               inner_sum := for j in i+1, N
+                   dx   := x[i] - x[j];
+                   dy   := y[i] - y[j];
+                   dz   := z[i] - z[j];
+                   dist := sqrt( dx*dx + dy*dy + dz*dz );
+               returns value of sum
+                   0.0d0 - (mass[i] * mass[j] / dist)
+               end for;
+            returns value of sum inner_sum
+            end for;
+   in
+      ke + pe
+   end let
+end function
+
+% Advances the physics simulation by one timestep dt
+function step_system( N : integer;
+                      x, y, z, vx, vy, vz, mass : RealVector;
+                      dt : double_real
+                      returns RealVector, RealVector, RealVector,
+                              RealVector, RealVector, RealVector )
+   let
+      new_vx, new_vy, new_vz :=
+         for i in 1, N
+            ax, ay, az :=
+               for j in 1, N
+                  dx    := x[j] - x[i];
+                  dy    := y[j] - y[i];
+                  dz    := z[j] - z[i];
+                  dist2 := dx*dx + dy*dy + dz*dz;
+                  mag   := if i = j then 0.0d0
+                           else dt * mass[j] / (dist2 * sqrt(dist2))
+                           end if;
+               returns value of sum dx * mag
+                       value of sum dy * mag
+                       value of sum dz * mag
+               end for;
+            v_x := vx[i] + ax;
+            v_y := vy[i] + ay;
+            v_z := vz[i] + az;
+         returns array of v_x
+                 array of v_y
+                 array of v_z
+         end for;
+
+      new_x, new_y, new_z :=
+         for i in 1, N
+            pos_x := x[i]  + new_vx[i] * dt;
+            pos_y := y[i]  + new_vy[i] * dt;
+            pos_z := z[i]  + new_vz[i] * dt;
+         returns array of pos_x
+                 array of pos_y
+                 array of pos_z
+         end for;
+   in
+      new_x, new_y, new_z, new_vx, new_vy, new_vz
+   end let
+end function
+
+% Main entry point
+function Main( steps : integer returns double_real )
+   let
+      x, y, z, vx, vy, vz, mass := init_bodies();
+
+      fx, fy, fz, fvx, fvy, fvz :=
+         for initial
+            cx  := x;
+            cy  := y;
+            cz  := z;
+            cvx := vx;
+            cvy := vy;
+            cvz := vz;
+            s   := 0;
+         while s < steps repeat
+            cx, cy, cz, cvx, cvy, cvz :=
+               step_system( 5, old cx, old cy, old cz,
+                               old cvx, old cvy, old cvz,
+                               mass, 0.01d0 );
+            s := old s + 1;
+         returns value of cx
+                 value of cy
+                 value of cz
+                 value of cvx
+                 value of cvy
+                 value of cvz
+         end for;
+   in
+      % Calculate energy of the final state
+      energy( 5, fx, fy, fz, fvx, fvy, fvz, mass )
+   end let
+end function

@@ -1,0 +1,57 @@
+define main
+
+type RealArray = array[double_real];
+
+% 1. COPY: a(i) = b(i)
+function Copy(n: integer; b: RealArray returns RealArray)
+  for i in 1, n
+  returns array of b[i]
+  end for
+end function
+
+% 2. SCALE: a(i) = q * b(i)
+function Scale(n: integer; q: double_real; b: RealArray returns RealArray)
+  for i in 1, n
+  returns array of q * b[i]
+  end for
+end function
+
+% 3. ADD: a(i) = b(i) + c(i)
+function Add(n: integer; b, c: RealArray returns RealArray)
+  for i in 1, n
+  returns array of b[i] + c[i]
+  end for
+end function
+
+% 4. TRIAD: a(i) = b(i) + q * c(i)
+function Triad(n: integer; q: double_real; b, c: RealArray returns RealArray)
+  for i in 1, n
+  returns array of b[i] + q * c[i]
+  end for
+end function
+
+function main(n: integer; kernel: integer returns double_real)
+% 0 = Copy, 1 = Scale, 2 = Add, 3 = Triad
+  let
+    % Prevent constant folding
+    a := for i in 1, n 
+      returns array of (double_real(i) - 1.0d0)
+    end for;
+    b := for i in 1, n 
+      returns array of (double_real(i) - 2.0d0)
+    end for;
+    q := 0.1234d0;
+
+    c := if kernel = 0 then Copy(n, a)
+	  elseif kernel = 1 then Scale(n, q, a)
+	  elseif kernel = 2 then Add(n, a, b)
+	  elseif kernel = 3 then Triad(n, q, a, b)
+	  else a
+	end if;
+
+    % check_sum to force a value back without I/O headaches
+    check_sum := c[n];%for val in c returns value of sum val end for;
+  in
+    check_sum
+  end let
+end function

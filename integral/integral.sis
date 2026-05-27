@@ -1,0 +1,29 @@
+% Calculates Pi using numerical integration
+% Integral from 0 to 1 of 4/(1+x^2)
+define Main
+
+function Calculate_Pi(N: integer returns double_real)
+   let
+      % The width of each tiny rectangle
+      width := double_real(1) / double_real(N);
+   in
+      % A massive functional loop
+      for i in 1, N
+         % Calculate the X position of the current slice
+         x := (double_real(i) - double_real(0.5)) * width;
+         % Calculate the height of the curve at X
+         height := double_real(4) / (double_real(1) + (x * x));
+         
+      % Sum the area (width * height) of all rectangles
+      returns value of sum (height * width)
+      end for
+   end let
+end function
+
+function Main(N: integer returns double_real)
+   if N <= 0 then
+      double_real(0)
+   else
+      Calculate_Pi(N)
+   end if
+end function

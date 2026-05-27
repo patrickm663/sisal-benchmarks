@@ -1,0 +1,33 @@
+define main
+
+% Calculates the number of iterations before the complex point (cr, ci) escapes
+function mandel_calc(cr, ci: double_real; max_iter: integer returns integer)
+   for initial
+      zr := 0.0d0;
+      zi := 0.0d0;
+      iter := 0;
+   while ((zr * zr + zi * zi) < 4.0d0) & (iter < max_iter) repeat
+      zr := old zr * old zr - old zi * old zi + cr;
+      zi := 2.0d0 * old zr * old zi + ci;
+      iter := old iter + 1;
+   returns value of iter
+   end for
+end function
+
+% Generates the 2D grid of escape values
+function main(width, height, max_iter: integer returns array[array[integer]])
+   for y in 0, height - 1
+   returns array of
+      for x in 0, width - 1
+      returns array of
+         let
+            % Map pixel coordinates to the complex plane:
+            % Real axis from -2.0 to 1.0, Imaginary axis from -1.5 to 1.5
+            cr := -2.0d0 + double_real(x) * (2.6d0 / double_real(width));
+            ci := -1.5d0 + double_real(y) * (3.0d0 / double_real(height));
+         in
+            mandel_calc(cr, ci, max_iter)
+         end let
+      end for
+   end for
+end function
